@@ -1,0 +1,64 @@
+# 🔹 Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 🔹 Environment variables (IMPORTANT - never upload secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 🔹 Build folders
+dist/
+build/
+.next/
+out/
+
+# 🔹 Logs
+logs/
+*.log
+
+# 🔹 OS files
+.DS_Store
+Thumbs.db
+
+# 🔹 IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 🔹 Cache files
+.cache/
+.parcel-cache/
+
+# 🔹 Temporary files
+tmp/
+temp/
+
+# 🔹 Coverage reports
+coverage/
+
+# 🔹 Node process files
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# 🔹 Optional: Ignore uploads (if you store files locally)
+uploads/
+public/uploads/
+
+# 🔹 Optional: Ignore database files (if local DB used)
+*.sqlite
+*.db
+
+# 🔹 TypeScript
+*.tsbuildinfo
+
+# 🔹 Mac system files
+.AppleDouble
+.LSOverride
