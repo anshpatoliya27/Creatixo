@@ -10,7 +10,7 @@ import authRoutes from "./routes/authRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import savedRoutes from "./routes/savedRoutes.js";
-
+import likeRoutes from "./routes/likeRoutes.js";
 connectDB();
 
 const app = express();
@@ -59,6 +59,7 @@ app.use("/api/auth", authLimiter, authRoutes); // Strict limit on auth
 app.use("/api/posts", postRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/saved", savedRoutes);
+app.use("/api/likes", likeRoutes);
 
 // ✅ Test route
 app.get("/", (req, res) => {

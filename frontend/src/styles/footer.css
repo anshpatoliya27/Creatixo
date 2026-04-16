@@ -1,0 +1,74 @@
+/* ===== Floating Glass Footer ===== */
+
+.floating-footer {
+  position: relative;
+  margin: 80px 0 20px 0;
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 20px 40px;
+
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(18px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* LEFT */
+
+.footer-logo {
+  font-weight: 600;
+  margin-right: 15px;
+  color: white;
+
+}
+
+.footer-tagline {
+  opacity: 0.8;
+}
+
+/* RIGHT LINKS */
+
+.footer-right a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #94a3b8;
+  transition: 0.3s;
+}
+
+.footer-right a:hover {
+  color: #38bdf8;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1024px) {
+  .floating-footer {
+    padding: 18px 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .floating-footer {
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+    margin: 60px 0 10px 0;
+    padding: 20px;
+  }
+
+  .footer-right a {
+    margin: 0 10px;
+  }
+
+  .footer-logo {
+    margin-right: 0;
+  }
+}

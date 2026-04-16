@@ -11,10 +11,13 @@ const router = express.Router();
 // GET ALL POSTS
 router.get("/", async (req, res) => {
   try {
-    const { category } = req.query;
+    const { category, search } = req.query;
     let query = {};
     if (category) {
       query.category = category;
+    }
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
     }
     const posts = await Post.find(query).populate('user', 'name avatar');
     res.json(posts);

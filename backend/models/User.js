@@ -75,6 +75,11 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post"
     }],
+    // ── Liked Posts ──
+    likedPosts: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post"
+    }],
     // ── Social Links ──
     socialLinks: {
       instagram: { type: String, default: "" },
