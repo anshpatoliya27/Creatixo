@@ -14,9 +14,10 @@ const razorpay = new Razorpay({
 });
 
 // ── Plan Configuration ──
+// 🎉 LAUNCH OFFER: Pro at ₹1/month!
 const PLAN_CONFIG = {
-  pro_monthly: { amount: 1900, currency: "INR", label: "Pro Monthly", durationDays: 30 },
-  pro_annual: { amount: 15000, currency: "INR", label: "Pro Annual", durationDays: 365 },
+  pro_monthly: { amount: 1, currency: "INR", label: "Pro Monthly (Launch Offer)", durationDays: 30 },
+  pro_annual: { amount: 10, currency: "INR", label: "Pro Annual (Launch Offer)", durationDays: 365 },
   enterprise_monthly: { amount: 9900, currency: "INR", label: "Enterprise Monthly", durationDays: 30 },
   enterprise_annual: { amount: 79000, currency: "INR", label: "Enterprise Annual", durationDays: 365 },
 };

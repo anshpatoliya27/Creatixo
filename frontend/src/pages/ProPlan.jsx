@@ -56,8 +56,10 @@ const ProPlan = () => {
       id: "pro",
       name: "Pro",
       description: "For creators & professionals looking to scale.",
-      monthlyPrice: 1900,
-      annualPrice: 15000,
+      monthlyPrice: 1,
+      annualPrice: 10,
+      originalMonthly: 1900,
+      originalAnnual: 15000,
       monthlyPlanKey: "pro_monthly",
       annualPlanKey: "pro_annual",
       features: [
@@ -68,10 +70,11 @@ const ProPlan = () => {
         { name: "Priority visibility in feeds", included: true },
         { name: "Ad-free experience", included: true },
       ],
-      buttonText: "Upgrade to Pro",
+      buttonText: "Get Pro — Just ₹1",
       buttonVariant: "primary",
       isPremium: true,
-      badge: "Most Popular",
+      badge: "🎉 Launch Offer",
+      isLaunchOffer: true,
     },
     {
       id: "enterprise",
@@ -147,17 +150,43 @@ const ProPlan = () => {
         return;
       }
 
-      // Step 2: Open Razorpay Checkout
+      // Step 2: Open Razorpay Checkout with UPI + all methods
       const options = {
         key: orderData.key,
         amount: orderData.order.amount,
         currency: orderData.order.currency,
         name: "Creatixo",
-        description: `${orderData.plan.label} Plan`,
+        description: `${orderData.plan.label}`,
+        image: "",
         order_id: orderData.order.id,
         prefill: {
           name: user?.name || "",
           email: user?.email || "",
+        },
+        // ✅ Enable UPI, GPay, PhonePe, Paytm, Cards, Net Banking
+        config: {
+          display: {
+            blocks: {
+              upi: {
+                name: "Pay via UPI",
+                instruments: [
+                  { method: "upi", flows: ["collect", "intent", "qr"], apps: ["google_pay", "phonepe", "paytm"] },
+                ],
+              },
+              other: {
+                name: "Other Methods",
+                instruments: [
+                  { method: "card" },
+                  { method: "netbanking" },
+                  { method: "wallet" },
+                ],
+              },
+            },
+            sequence: ["block.upi", "block.other"],
+            preferences: {
+              show_default_blocks: false,
+            },
+          },
         },
         theme: {
           color: "#2563eb",
@@ -329,6 +358,17 @@ const ProPlan = () => {
                   </>
                 ) : (
                   <>
+                    {plan.isLaunchOffer && (
+                      <span style={{
+                        textDecoration: 'line-through',
+                        color: '#64748b',
+                        fontSize: '1.3rem',
+                        marginRight: '10px',
+                        fontWeight: '500',
+                      }}>
+                        ₹{(isAnnual ? Math.round(plan.originalAnnual / 12) : plan.originalMonthly)?.toLocaleString("en-IN")}
+                      </span>
+                    )}
                     {getDisplayPrice(plan)}
                     <span className="pro-price-period">/mo</span>
                   </>
@@ -336,7 +376,13 @@ const ProPlan = () => {
               </div>
 
               <div style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '30px', minHeight: '20px' }}>
-                {isAnnual && plan.annualPrice > 0 ? `Billed ₹${plan.annualPrice.toLocaleString("en-IN")} yearly` : ' '}
+                {plan.isLaunchOffer ? (
+                  <span style={{ color: '#4ade80', fontWeight: '600' }}>
+                    🎉 Limited Time Launch Offer!
+                  </span>
+                ) : (
+                  isAnnual && plan.annualPrice > 0 ? `Billed ₹${plan.annualPrice.toLocaleString("en-IN")} yearly` : ' '
+                )}
               </div>
 
               <div className="pro-divider"></div>
