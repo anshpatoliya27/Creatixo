@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import "../styles/simple-page.css";
 
 export default function Contact() {
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
