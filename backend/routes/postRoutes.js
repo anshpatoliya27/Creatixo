@@ -1,5 +1,6 @@
 import express from "express";
 import Post from "../models/Post.js";
+import User from "../models/User.js";
 import { verifyToken } from "../middleware/auth.js";
 import cloudinary from "../config/cloudinary.js";
 
@@ -7,6 +8,9 @@ console.log('Loading postRoutes...');
 console.log('Using Cloudinary:', cloudinary.config().cloud_name ? 'configured' : 'missing config');
 
 const router = express.Router();
+
+// ── Free user daily post limit ──
+const FREE_DAILY_POST_LIMIT = 5;
 
 // GET ALL POSTS
 router.get("/", async (req, res) => {
@@ -19,7 +23,7 @@ router.get("/", async (req, res) => {
     if (search) {
       query.title = { $regex: search, $options: "i" };
     }
-    const posts = await Post.find(query).populate('user', 'name avatar');
+    const posts = await Post.find(query).populate('user', 'name avatar isPro proPlan').sort({ createdAt: -1 });
     res.json(posts);
   } catch (error) {
     console.error(error);
@@ -27,20 +31,97 @@ router.get("/", async (req, res) => {
   }
 });
 
-// CREATE POST
+// GET PROMOTED ADS (Pro user video ads for homepage)
+router.get("/promoted-ads", async (req, res) => {
+  try {
+    const ads = await Post.find({ isAd: true })
+      .populate("user", "name avatar isPro")
+      .sort({ createdAt: -1 })
+      .limit(10);
+    res.json(ads);
+  } catch (error) {
+    console.error("Error fetching promoted ads:", error);
+    res.status(500).json({ message: "Error fetching promoted ads" });
+  }
+});
+
+// CREATE POST (with Pro features: video upload, unlimited posts, ads)
 router.post("/", verifyToken, async (req, res) => {
   try {
-    console.log('POST /api/posts request body:', req.body);
-    const { title, description, category, image } = req.body;
+    console.log('POST /api/posts request body keys:', Object.keys(req.body));
+    const { title, description, category, image, video, isAd, adVideo, mediaType } = req.body;
+
+    // Fetch user to check Pro status
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Auto-expire Pro if past date
+    if (user.isPro && user.proExpiresAt && new Date() > new Date(user.proExpiresAt)) {
+      user.isPro = false;
+      user.proPlan = "none";
+      await user.save();
+    }
+
+    // ── Free user post limit check ──
+    if (!user.isPro) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayPostCount = await Post.countDocuments({
+        user: user._id,
+        createdAt: { $gte: todayStart },
+      });
+
+      if (todayPostCount >= FREE_DAILY_POST_LIMIT) {
+        return res.status(403).json({
+          message: `Free users can post ${FREE_DAILY_POST_LIMIT} times per day. Upgrade to Pro for unlimited posts!`,
+          requiresPro: true,
+        });
+      }
+
+      // Free users cannot upload videos or create ads
+      if (video || isAd || adVideo || mediaType === "video") {
+        return res.status(403).json({
+          message: "Video uploads and Ad campaigns are Pro-only features. Upgrade to Pro!",
+          requiresPro: true,
+        });
+      }
+    }
 
     let imageUrl = null;
+    let videoUrl = "";
+    let adVideoUrl = "";
 
+    // Upload image to Cloudinary
     if (image) {
       const result = await cloudinary.uploader.upload(image, {
-        folder: 'posts'
+        folder: 'posts',
       });
-      console.log('Cloudinary upload result:', result);
+      console.log('Cloudinary image upload result:', result.secure_url);
       imageUrl = result.secure_url;
+    }
+
+    // Upload video to Cloudinary (Pro only)
+    if (video && user.isPro) {
+      const result = await cloudinary.uploader.upload(video, {
+        folder: 'posts/videos',
+        resource_type: 'video',
+        chunk_size: 6000000,
+      });
+      console.log('Cloudinary video upload result:', result.secure_url);
+      videoUrl = result.secure_url;
+    }
+
+    // Upload ad video to Cloudinary (Pro only)
+    if (adVideo && user.isPro) {
+      const result = await cloudinary.uploader.upload(adVideo, {
+        folder: 'posts/ads',
+        resource_type: 'video',
+        chunk_size: 6000000,
+      });
+      console.log('Cloudinary ad video upload result:', result.secure_url);
+      adVideoUrl = result.secure_url;
     }
 
     const newPost = new Post({
@@ -48,12 +129,19 @@ router.post("/", verifyToken, async (req, res) => {
       description,
       category,
       image: imageUrl,
-      user: req.user.id
+      video: videoUrl,
+      isAd: user.isPro ? (isAd || false) : false,
+      adVideo: adVideoUrl,
+      mediaType: mediaType || "image",
+      user: req.user.id,
     });
 
     await newPost.save();
-    console.log('Saved post:', newPost);
-    res.status(201).json(newPost);
+
+    // Populate user details before sending back
+    const populatedPost = await Post.findById(newPost._id).populate("user", "name avatar isPro");
+    console.log('Saved post:', populatedPost._id);
+    res.status(201).json(populatedPost);
   } catch (error) {
     console.error('Error in POST /api/posts:', error);
     res.status(500).json({ message: "Error creating post" });

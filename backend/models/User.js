@@ -86,7 +86,42 @@ const userSchema = new mongoose.Schema(
       twitter: { type: String, default: "" },
       linkedin: { type: String, default: "" },
       youtube: { type: String, default: "" }
-    }
+    },
+    // ── Pro Subscription ──
+    isPro: {
+      type: Boolean,
+      default: false
+    },
+    proPlan: {
+      type: String,
+      enum: ["none", "pro_monthly", "pro_annual", "enterprise_monthly", "enterprise_annual"],
+      default: "none"
+    },
+    proExpiresAt: {
+      type: Date,
+      default: null
+    },
+    proActivatedAt: {
+      type: Date,
+      default: null
+    },
+    razorpayOrderId: {
+      type: String,
+      default: ""
+    },
+    razorpayPaymentId: {
+      type: String,
+      default: ""
+    },
+    paymentHistory: [{
+      orderId: String,
+      paymentId: String,
+      amount: Number,
+      currency: String,
+      plan: String,
+      status: String,
+      paidAt: { type: Date, default: Date.now }
+    }]
   },
   { timestamps: true }
 );

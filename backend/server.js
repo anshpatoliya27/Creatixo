@@ -11,6 +11,7 @@ import postRoutes from "./routes/postRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import savedRoutes from "./routes/savedRoutes.js";
 import likeRoutes from "./routes/likeRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 connectDB();
 
 const app = express();
@@ -60,6 +61,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/saved", savedRoutes);
 app.use("/api/likes", likeRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // ✅ Test route
 app.get("/", (req, res) => {

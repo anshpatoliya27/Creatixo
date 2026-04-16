@@ -17,6 +17,24 @@ const postSchema = new mongoose.Schema(
     image: {
       type: String
     },
+    // ── Pro Features ──
+    video: {
+      type: String,
+      default: ""
+    },
+    isAd: {
+      type: Boolean,
+      default: false
+    },
+    adVideo: {
+      type: String,
+      default: ""
+    },
+    mediaType: {
+      type: String,
+      enum: ["image", "video"],
+      default: "image"
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
