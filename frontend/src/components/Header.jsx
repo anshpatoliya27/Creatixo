@@ -155,6 +155,28 @@ function Header({ onToggleSidebar }) {
       </div>
 
       <div className="nav-right">
+        
+        <Link to="/pro" style={{ textDecoration: 'none', marginRight: '16px' }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #38bdf8 0%, #2563eb 100%)',
+            color: '#fff',
+            padding: '6px 14px',
+            borderRadius: '99px',
+            fontSize: '0.85rem',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            boxShadow: '0 4px 12px rgba(56, 189, 248, 0.3)',
+            transition: 'transform 0.2s',
+            cursor: 'pointer'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+          >
+            <span role="img" aria-label="sparkles">✨</span> Pro
+          </div>
+        </Link>
 
         <div className="nav-icon">🔔</div>
 
